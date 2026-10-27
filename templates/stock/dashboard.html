@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load stock_extras %}
+{% load humanize %}
+{% block content %}
+<h1>Tableau de bord</h1>
+
+<div class="stats">
+  <div class="stat"><span>{{ nb_produits }}</span>produits actifs</div>
+  <div class="stat {% if alertes %}danger{% endif %}"><span>{{ alertes|length }}</span>en stock bas</div>
+  <div class="stat {% if peremptions %}warn{% endif %}"><span>{{ peremptions|length }}</span>péremptions proches</div>
+  <div class="stat"><span>{% if valeur_stock %}{{ valeur_stock|floatformat:3|intcomma }}{% else %}—{% endif %}</span>valeur du stock (TND)</div>
+</div>
+
+<div class="grille">
+  <section class="carte">
+    <h2>⚠️ Stock bas — à commander</h2>
+    {% if alertes %}
+    <table>
+      <tr><th>Produit</th><th>Stock</th><th>Seuil</th></tr>
+      {% for p in alertes %}
+      <tr><td><a href="{{ p.get_absolute_url }}">{{ p.nom }}</a></td>
+          <td class="danger-txt">{{ p.quantite|qte }} {{ p.get_unite_display }}</td>
+          <td>{{ p.seuil_alerte|qte }}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="vide">Rien à commander.</p>{% endif %}
+  </section>
+
+  <section class="carte">
+    <h2>⏳ Péremptions proches</h2>
+    {% if peremptions %}
+    <table>
+      <tr><th>Produit</th><th>Date</th><th>Stock</th></tr>
+      {% for p in peremptions %}
+      <tr><td><a href="{{ p.get_absolute_url }}">{{ p.nom }}</a></td>
+          <td class="{% if p.perime %}danger-txt{% else %}warn-txt{% endif %}">{{ p.date_peremption|date:"d/m/Y" }}{% if p.perime %} (périmé){% endif %}</td>
+          <td>{{ p.quantite|qte }} {{ p.get_unite_display }}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="vide">Aucune péremption dans les prochains jours.</p>{% endif %}
+  </section>
+</div>
+
+<section class="carte">
+  <h2>Derniers mouvements</h2>
+  {% include "stock/_mouvements_table.html" with mouvements=derniers avec_produit=True %}
+</section>
+{% endblock %}

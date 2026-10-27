@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="carte etroit">
+  <h1>{{ titre }}</h1>
+  <form method="post" class="formulaire" onkeydown="if(event.key==='Enter' && event.target.classList.contains('champ-scan')){event.preventDefault(); document.getElementById('id_nom').focus();}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="retour" value="{{ retour }}">
+    <button class="btn">Enregistrer</button>
+    <a href="{% if produit %}{{ produit.get_absolute_url }}{% else %}{% url 'stock:produit_list' %}{% endif %}">Annuler</a>
+  </form>
+  <p class="aide">Astuce : la douchette envoie « Entrée » après le code ; dans le champ code-barres,
+    cela passe simplement au champ suivant au lieu de soumettre le formulaire.</p>
+</div>
+{% endblock %}

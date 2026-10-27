@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Mouvements de stock</h1>
+<form method="get" class="filtres">
+  <select name="type" onchange="this.form.submit()">
+    <option value="">Tous les types</option>
+    {% for val, lib in types %}<option value="{{ val }}" {% if type == val %}selected{% endif %}>{{ lib }}</option>{% endfor %}
+  </select>
+</form>
+<section class="carte">
+  {% include "stock/_mouvements_table.html" with mouvements=page avec_produit=True %}
+</section>
+{% if page.has_other_pages %}
+<div class="pagination">
+  {% if page.has_previous %}<a href="?{% if type %}type={{ type }}&{% endif %}page={{ page.previous_page_number }}">← Précédent</a>{% endif %}
+  Page {{ page.number }} / {{ page.paginator.num_pages }}
+  {% if page.has_next %}<a href="?{% if type %}type={{ type }}&{% endif %}page={{ page.next_page_number }}">Suivant →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

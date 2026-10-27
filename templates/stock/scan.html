@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Scanner — Stock cuisine{% endblock %}
+{% block content %}
+<div class="scan-page">
+  <h1>Scanner</h1>
+
+  <div class="modes" role="radiogroup" aria-label="Mode">
+    <button type="button" class="mode actif" data-mode="sortie">− Sortie <kbd>F1</kbd></button>
+    <button type="button" class="mode" data-mode="entree">+ Entrée <kbd>F2</kbd></button>
+    <button type="button" class="mode" data-mode="perte">✕ Perte <kbd>F3</kbd></button>
+    <button type="button" class="mode" data-mode="consulter">? Consulter <kbd>F4</kbd></button>
+  </div>
+
+  <div class="scan-zone" id="zone">
+    <label for="qte">Quantité</label>
+    <input id="qte" type="number" min="0.001" step="any" value="1" inputmode="decimal">
+    <label for="code">Code-barres</label>
+    <input id="code" type="text" autocomplete="off" autofocus placeholder="Scannez un produit…">
+    <p class="etat" id="etat">Prêt — scannez un produit.</p>
+  </div>
+
+  <div id="resultat" class="resultat" hidden></div>
+
+  <h2>Scans de cette session</h2>
+  <table id="journal" class="carte">
+    <tr><th>Heure</th><th>Produit</th><th>Action</th><th>Stock</th><th></th></tr>
+  </table>
+</div>
+
+{% csrf_token %}
+<script>
+  window.SCAN_CONFIG = {
+    apiUrl: "{% url 'stock:scan_api' %}",
+    annulerUrl: "{% url 'stock:annuler_mouvement' 0 %}",
+  };
+</script>
+{% endblock %}
+{% block scripts %}<script src="{% static 'stock/scan.js' %}"></script>{% endblock %}

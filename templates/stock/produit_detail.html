@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load stock_extras %}
+{% block content %}
+<div class="entete">
+  <div>
+    <h1>{{ produit.nom }}</h1>
+    <p class="sous-titre"><code>{{ produit.code_barre|default:"sans code-barres" }}</code> · {{ produit.categorie|default:"sans catégorie" }} · {{ produit.get_emplacement_display }}</p>
+  </div>
+  <a class="btn btn-sec" href="{% url 'stock:produit_update' produit.pk %}">Modifier</a>
+</div>
+
+<div class="stats">
+  <div class="stat {% if produit.en_alerte %}danger{% endif %}"><span>{{ produit.quantite|qte }}</span>{{ produit.get_unite_display }} en stock</div>
+  <div class="stat"><span>{{ produit.seuil_alerte|qte }}</span>seuil d'alerte</div>
+  <div class="stat {% if produit.perime %}danger{% elif produit.bientot_perime %}warn{% endif %}"><span>{{ produit.date_peremption|date:"d/m/y"|default:"—" }}</span>prochaine péremption</div>
+  <div class="stat"><span>{% if produit.valeur_stock is not None %}{{ produit.valeur_stock|floatformat:3 }}{% else %}—{% endif %}</span>valeur (TND)</div>
+</div>
+
+<div class="grille">
+  <section class="carte">
+    <h2>Nouveau mouvement</h2>
+    <form method="post" class="formulaire">{% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn">Enregistrer</button>
+    </form>
+  </section>
+  <section class="carte">
+    <h2>Historique</h2>
+    {% include "stock/_mouvements_table.html" with mouvements=mouvements %}
+  </section>
+</div>
+{% endblock %}

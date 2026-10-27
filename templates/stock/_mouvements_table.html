@@ -1,0 +1,17 @@
+{% load stock_extras %}
+{% if mouvements %}
+<table>
+  <tr><th>Date</th>{% if avec_produit %}<th>Produit</th>{% endif %}<th>Type</th><th>Qté</th><th>Stock</th><th>Par</th><th>Note</th></tr>
+  {% for m in mouvements %}
+  <tr>
+    <td>{{ m.date|date:"d/m H:i" }}</td>
+    {% if avec_produit %}<td><a href="{{ m.produit.get_absolute_url }}">{{ m.produit.nom }}</a></td>{% endif %}
+    <td><span class="badge badge-{{ m.type }}">{{ m.get_type_display }}</span>{% if m.via_scan %} <small title="via douchette">▦</small>{% endif %}</td>
+    <td>{{ m.quantite|qte }}</td>
+    <td>{{ m.stock_avant|qte }} → <strong>{{ m.stock_apres|qte }}</strong></td>
+    <td>{{ m.utilisateur|default:"—" }}</td>
+    <td>{{ m.note }}{% if m.date_peremption %} DLC {{ m.date_peremption|date:"d/m/Y" }}{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}<p class="vide">Aucun mouvement.</p>{% endif %}
